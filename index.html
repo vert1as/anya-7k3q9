@@ -68,6 +68,9 @@
   .date .what{font-size:1.05rem;opacity:1;margin-bottom:6px}
   .date.today{background:linear-gradient(135deg,#ffd0e0,#fff);outline:2px solid var(--pink)}
 
+  section[hidden]{display:none}
+  #teaser b{color:var(--deep);font-size:1.3rem;display:inline-block;margin-top:8px}
+
   /* причины */
   .reason-card{min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px}
   #reason{font-size:1.35rem;line-height:1.5;transition:opacity .25s,transform .25s}
@@ -143,6 +146,16 @@
     <div id="reason-count"></div>
   </div>
   <button class="btn" id="more">Ещё одну причину</button>
+</section>
+
+<section id="teaser">
+  <div class="card">🎁 Здесь скоро появится сюрприз<br><b id="teaser-days"></b></div>
+</section>
+
+<section id="month" hidden>
+  <h2>Нам месяц 💞</h2>
+  <div class="dates" id="stats"></div>
+  <div class="card" id="mletter-card" hidden style="margin-top:22px"><div id="mletter" class="caret" style="min-height:6em;white-space:pre-wrap;text-align:left;line-height:1.7;font-size:1.1rem"></div></div>
 </section>
 
 <section>
@@ -288,6 +301,60 @@ function nextReason(){
   for (let i=0;i<6;i++) setTimeout(spawnHeart, i*80);
 }
 document.getElementById("more").addEventListener("click", nextReason);
+
+// сюрприз на 4 декабря (месяц вместе)
+const MONTH_DATE = new Date("2026-12-04T00:00:00");
+// Письмо на месяц: впиши текст между кавычками-обратными. Пока пусто — блок с письмом не показывается.
+const MONTH_LETTER = ``;
+function setupMonth(){
+  const preview = location.search.includes("preview=month");   // для проверки: ?preview=month
+  const open = preview || new Date() >= MONTH_DATE;
+  const month = document.getElementById("month"), teaser = document.getElementById("teaser");
+  if (!open){
+    const d = Math.ceil((MONTH_DATE - new Date()) / 86400000);
+    document.getElementById("teaser-days").textContent =
+      `откроется 4 декабря — через ${d} ${d%10===1&&d%100!==11?"день":(d%10>=2&&d%10<=4&&(d%100<10||d%100>20))?"дня":"дней"}`;
+    return;
+  }
+  teaser.hidden = true; month.hidden = false;
+  const days = Math.round((MONTH_DATE - new Date(START_DATE)) / 86400000);
+  const stats = [
+    {n:days,           t:"дней вместе"},
+    {n:days*24,        t:"часов вместе"},
+    {n:days*24*60,     t:"минут вместе"},
+    {n:REASONS.length, t:"причин любить тебя (и это ещё не все)"},
+    {n:1,              t:"идеальные рыжие волосы 🧡"},
+    {n:"∞",            t:"раз хотелось тебя обнять"},
+  ];
+  const box = document.getElementById("stats");
+  box.innerHTML = stats.map(x=>`<div class="date"><b data-n="${x.n}">${typeof x.n==="number"?0:x.n}</b><span>${x.t}</span></div>`).join("");
+  let counted = false;
+  new IntersectionObserver((e,o)=>{
+    if (!e[0].isIntersecting || counted) return;
+    counted = true; o.disconnect();
+    box.querySelectorAll("b").forEach(b=>{
+      const end = Number(b.dataset.n); if (isNaN(end)) return;
+      const t0 = performance.now();
+      (function step(t){
+        const k = Math.min(1, (t - t0) / 1600);
+        b.textContent = Math.round(end * (1 - Math.pow(1-k, 3)));
+        if (k < 1) requestAnimationFrame(step);
+      })(t0);
+    });
+  },{threshold:.4}).observe(box);
+  if (MONTH_LETTER.trim()){
+    const card = document.getElementById("mletter-card"), el = document.getElementById("mletter");
+    card.hidden = false;
+    let typedM = false;
+    new IntersectionObserver((e,o)=>{
+      if (!e[0].isIntersecting || typedM) return;
+      typedM = true; o.disconnect();
+      let i = 0;
+      (function type(){ el.textContent = MONTH_LETTER.slice(0, ++i); if (i < MONTH_LETTER.length) setTimeout(type, 45); })();
+    },{threshold:.5}).observe(el);
+  }
+}
+setupMonth();
 
 // музыка: Weezer — Across the Sea (файл music/across-the-sea.mp3 кладёшь сам)
 const music = document.getElementById("music"), mbtn = document.getElementById("music-btn");
