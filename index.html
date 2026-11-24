@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Для тебя 💗</title>
+<style>
+  :root{
+    --bg1:#fff0f5; --bg2:#ffd9e6; --pink:#ff8fb1; --deep:#e0457b; --text:#6b2b44; --card:#ffffffcc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI",system-ui,sans-serif; color:var(--text);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed; min-height:100vh; overflow-x:hidden;
+  }
+  h1,h2{font-family:"Georgia",serif; color:var(--deep); font-weight:normal}
+  section{max-width:760px;margin:0 auto;padding:64px 20px;text-align:center}
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .hero h1{font-size:clamp(2.2rem,8vw,4rem);margin-bottom:12px}
+  .hero p{font-size:1.2rem;opacity:.85}
+  .btn{
+    margin-top:28px;padding:14px 30px;border:none;border-radius:999px;background:var(--pink);color:#fff;
+    font-size:1.05rem;cursor:pointer;box-shadow:0 6px 18px #ff8fb166;transition:transform .2s,background .2s;
+  }
+  .btn:hover{transform:scale(1.07);background:var(--deep)}
+  h2{font-size:2rem;margin-bottom:24px}
+  .card{background:var(--card);border-radius:24px;padding:28px;box-shadow:0 10px 30px #e0457b22;backdrop-filter:blur(6px)}
+
+  /* таймер */
+  .timer{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .timer div{background:#fff;border-radius:18px;padding:16px 18px;min-width:84px;box-shadow:0 4px 14px #e0457b1f}
+  .timer b{display:block;font-size:2rem;color:var(--deep)}
+  .timer span{font-size:.85rem;opacity:.75}
+
+  /* письмо */
+  #letter{white-space:pre-wrap;text-align:left;line-height:1.7;font-size:1.1rem;min-height:9em}
+  .caret::after{content:"|";animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* галерея */
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+  .photo{
+    aspect-ratio:1;border-radius:20px;background:linear-gradient(135deg,#ffc2d6,#ffe3ec);
+    display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden;
+    box-shadow:0 6px 16px #e0457b22;transition:transform .25s;
+  }
+  .photo:hover{transform:rotate(-2deg) scale(1.04)}
+  .photo img{width:100%;height:100%;object-fit:cover}
+
+  /* вопрос */
+  .answer{display:flex;gap:16px;justify-content:center;align-items:center;min-height:90px;position:relative}
+  #no{position:relative}
+  #yes-msg{display:none;font-size:1.6rem;color:var(--deep);margin-top:20px}
+
+  /* сердечки */
+  .heart{position:fixed;bottom:-30px;pointer-events:none;animation:rise linear forwards;z-index:0}
+  @keyframes rise{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+  section,.hero{position:relative;z-index:1}
+  footer{padding:30px;text-align:center;opacity:.6}
+
+  /* ближайшие даты */
+  .dates{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .date{background:#fff;border-radius:20px;padding:20px 14px;box-shadow:0 4px 14px #e0457b1f}
+  .date b{display:block;font-size:2.4rem;color:var(--deep);line-height:1.1}
+  .date span{display:block;font-size:.9rem;opacity:.75;margin-top:4px}
+  .date .what{font-size:1.05rem;opacity:1;margin-bottom:6px}
+  .date.today{background:linear-gradient(135deg,#ffd0e0,#fff);outline:2px solid var(--pink)}
+
+  /* причины */
+  .reason-card{min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px}
+  #reason{font-size:1.35rem;line-height:1.5;transition:opacity .25s,transform .25s}
+  #reason.swap{opacity:0;transform:translateY(8px)}
+  #reason-count{font-size:.85rem;opacity:.55}
+
+  /* музыка */
+  #music-btn{position:fixed;right:16px;bottom:16px;z-index:50;width:52px;height:52px;border:none;border-radius:50%;
+    background:var(--pink);color:#fff;font-size:1.4rem;cursor:pointer;box-shadow:0 6px 18px #ff8fb188;
+    transition:transform .2s,background .2s}
+  #music-btn:hover{transform:scale(1.1)}
+  #music-btn.playing{background:var(--deep);animation:pulse 2s infinite}
+  #music-btn.off{display:none}
+  body.locked #music-btn{display:none}
+  @keyframes pulse{50%{box-shadow:0 0 0 10px #e0457b22}}
+
+  /* вход по паролю */
+  body.locked{overflow:hidden}
+  #gate{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));padding:20px}
+  .gate-box{background:var(--card);border-radius:28px;padding:34px 28px;max-width:360px;width:100%;
+    text-align:center;box-shadow:0 12px 36px #e0457b33}
+  .gate-box h2{font-size:1.7rem;margin:8px 0 10px}
+  .gate-box p{opacity:.8;margin-bottom:16px}
+  #pw{width:100%;padding:14px;border-radius:14px;border:2px solid #ffc2d6;font-size:1.2rem;text-align:center;
+    outline:none;color:var(--text);background:#fff}
+  #pw:focus{border-color:var(--pink)}
+  #err{color:var(--deep);min-height:1.4em;margin-top:12px}
+  .shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+</style>
+</head>
+<body class="locked">
+
+<div id="gate">
+  <div class="gate-box">
+    <div style="font-size:3rem">🔒</div>
+    <h2>Только для Ани</h2>
+    <p>Введи пароль — день рождения того, кто это сделал 💗</p>
+    <input id="pw" type="text" inputmode="numeric" placeholder="дд.мм" autocomplete="off">
+    <button class="btn" id="enter" style="margin-top:14px">Войти</button>
+    <div id="err"></div>
+  </div>
+</div>
+
+<header class="hero">
+  <h1>Привет, <span id="name">Аня</span> 💗</h1>
+  <p>Я сделал для тебя маленький уголок в интернете</p>
+  <button class="btn" onclick="document.getElementById('time').scrollIntoView()">Листай вниз ↓</button>
+</header>
+
+<section id="time">
+  <h2>Мы вместе уже</h2>
+  <div class="timer" id="timer"></div>
+</section>
+
+<section>
+  <h2>Ближайшие даты</h2>
+  <div class="dates" id="dates"></div>
+</section>
+
+<section>
+  <h2>Письмо тебе</h2>
+  <div class="card"><div id="letter" class="caret"></div></div>
+</section>
+
+<section>
+  <h2>За что я тебя люблю</h2>
+  <div class="card reason-card">
+    <div id="reason">Нажми на кнопку 💗</div>
+    <div id="reason-count"></div>
+  </div>
+  <button class="btn" id="more">Ещё одну причину</button>
+</section>
+
+<section>
+  <h2>Один важный вопрос</h2>
+  <p style="margin-bottom:18px">Ты меня любишь?</p>
+  <div class="answer">
+    <button class="btn" id="yes">Да 💕</button>
+    <button class="btn" id="no" style="background:#c9a3b2">Нет</button>
+  </div>
+  <div id="yes-msg">Я знал! Я тоже тебя люблю 💗</div>
+</section>
+
+<footer>Сделано с любовью ✨</footer>
+
+<audio id="music" src="music/across-the-sea.mp3" loop preload="auto"></audio>
+<button id="music-btn" title="Музыка">🎵</button>
+
+<script>
+/* ===== НАСТРОЙКИ — поменяй под себя ===== */
+const HER_NAME   = "Аня";                     // её имя
+const START_DATE = "2026-11-04T00:00:00";     // дата начала отношений
+const LETTER = `Ты — самое лучшее, что случилось со мной.
+
+Спасибо, что ты рядом, что смеёшься над моими шутками и делаешь обычные дни особенными.
+
+Я очень тебя люблю 💗`;
+const PHOTOS = [   // положи фото в папку photos/ и впиши имена, например "photos/1.jpg"
+  "", "", "", "", "", ""
+];
+/* ======================================== */
+
+document.getElementById("name").textContent = HER_NAME;
+
+// таймер
+const timerEl = document.getElementById("timer");
+function tick(){
+  let s = Math.max(0, Math.floor((Date.now() - new Date(START_DATE)) / 1000));
+  const d = Math.floor(s/86400); s%=86400;
+  const h = Math.floor(s/3600);  s%=3600;
+  const m = Math.floor(s/60);    s%=60;
+  timerEl.innerHTML = [[d,"дней"],[h,"часов"],[m,"минут"],[s,"секунд"]]
+    .map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join("");
+}
+tick(); setInterval(tick,1000);
+
+// письмо печатается, когда доходишь до него
+const letterEl = document.getElementById("letter");
+let typed = false;
+new IntersectionObserver((e,o)=>{
+  if(e[0].isIntersecting && !typed){
+    typed = true; o.disconnect();
+    let i = 0;
+    (function type(){
+      letterEl.textContent = LETTER.slice(0, ++i);
+      if(i < LETTER.length) setTimeout(type, 45);
+    })();
+  }
+},{threshold:.5}).observe(letterEl);
+
+// ближайшие даты
+const BIRTHDAY = null;   // её день рождения, например [3, 14] = 14 апреля (месяц 0–11: 3 = апрель); null — пока не показывать
+function nextDate(month, day){
+  const n = new Date(), t = new Date(n.getFullYear(), month, day);
+  if (t < new Date(n.getFullYear(), n.getMonth(), n.getDate())) t.setFullYear(n.getFullYear()+1);
+  return t;
+}
+function daysTo(t){
+  const n = new Date();
+  return Math.round((t - new Date(n.getFullYear(), n.getMonth(), n.getDate())) / 86400000);
+}
+function renderDates(){
+  const s = new Date(START_DATE), n = new Date();
+  // следующий «месяцеверсарий»
+  let m = new Date(n.getFullYear(), n.getMonth(), s.getDate());
+  if (m < new Date(n.getFullYear(), n.getMonth(), n.getDate())) m.setMonth(m.getMonth()+1);
+  const months = (m.getFullYear()-s.getFullYear())*12 + m.getMonth()-s.getMonth();
+  const word = months % 12 === 0 ? `${months/12} ${months/12===1?"год":"года"} вместе` : `${months} ${months%10===1&&months!==11?"месяц":(months%10>=2&&months%10<=4&&(months<10||months>20))?"месяца":"месяцев"} вместе`;
+  const list = [
+    {icon:"💞", what:word, t:m},
+    {icon:"🎄", what:"Новый год", t:nextDate(0,1)},
+    {icon:"💌", what:"День святого Валентина", t:nextDate(1,14)},
+    {icon:"🌷", what:"8 марта", t:nextDate(2,8)},
+  ];
+  if (BIRTHDAY) list.push({icon:"🎂", what:"Твой день рождения", t:nextDate(BIRTHDAY[0], BIRTHDAY[1])});
+  list.sort((a,b)=>a.t-b.t);
+  document.getElementById("dates").innerHTML = list.map(x=>{
+    const d = daysTo(x.t);
+    const big = d === 0 ? "Сегодня! 🎉" : d;
+    const small = d === 0 ? "" : (d%10===1&&d%100!==11?"день":(d%10>=2&&d%10<=4&&(d%100<10||d%100>20))?"дня":"дней") + " осталось";
+    return `<div class="date${d===0?" today":""}"><div class="what">${x.icon} ${x.what}</div><b>${big}</b><span>${small}</span></div>`;
+  }).join("");
+}
+renderDates();
+
+// причины (замени на свои!)
+const REASONS = [
+  "За твои идеальные рыжие волосы — как будто в них спрятано солнце 🧡",
+  "За то, что твои рыжие волосы на свету горят огнём, и я не могу отвести взгляд",
+  "За твою улыбку — от неё у меня становится теплее",
+  "За твой смех, который заразителен",
+  "За твои глаза, в которых я могу потеряться",
+  "За то, что ты умеешь радоваться мелочам",
+  "За то, что рядом с тобой мне спокойно",
+  "За твой голос — я могу слушать его бесконечно",
+  "За то, что ты добрая",
+  "За то, что с тобой любой день становится лучше",
+  "За то, что ты настоящая",
+  "За то, что ты красивая — и снаружи, и внутри",
+  "За то, как ты на меня смотришь",
+  "За то, что рядом с тобой я хочу быть лучше",
+  "За твои объятия, из которых не хочется уходить",
+  "За то, что ты умеешь поддержать, когда это нужно",
+  "За то, что ты не похожа ни на кого другого",
+  "За то, что я улыбаюсь, когда думаю о тебе",
+  "За твой взгляд, от которого у меня замирает сердце",
+  "За то, что ты делаешь мир вокруг ярче",
+  "За твою нежность",
+  "За то, что с тобой можно говорить обо всём — и ни о чём",
+  "За то, что ты умеешь удивлять",
+  "За то, что ты есть в моей жизни",
+  "За то, что с тобой даже тишина уютная",
+  "За то, что я скучаю по тебе, даже когда ты ненадолго уходишь",
+  "За то, что ты — мой любимый человек",
+  "Просто за то, что ты — это ты 💗",
+];
+let order = [], seen = 0, last = -1;
+const reasonEl = document.getElementById("reason"), countEl = document.getElementById("reason-count");
+function nextReason(){
+  if (!order.length){
+    order = REASONS.map((_,i)=>i).sort(()=>Math.random()-.5);
+    // чтобы после перемешивания не выпала та же причина, что только что была
+    if (order[order.length-1] === last) order.unshift(order.pop());
+  }
+  last = order.pop();
+  const text = REASONS[last];
+  seen++;
+  reasonEl.classList.add("swap");
+  setTimeout(()=>{
+    reasonEl.textContent = text;
+    countEl.textContent = `Причина №${seen}`;
+    reasonEl.classList.remove("swap");
+  }, 250);
+  for (let i=0;i<6;i++) setTimeout(spawnHeart, i*80);
+}
+document.getElementById("more").addEventListener("click", nextReason);
+
+// музыка: Weezer — Across the Sea (файл music/across-the-sea.mp3 кладёшь сам)
+const music = document.getElementById("music"), mbtn = document.getElementById("music-btn");
+let musicOk = true;
+music.addEventListener("error", ()=>{ musicOk = false; mbtn.classList.add("off"); });
+music.addEventListener("play",  ()=> mbtn.classList.add("playing"));
+music.addEventListener("pause", ()=> mbtn.classList.remove("playing"));
+mbtn.addEventListener("click", ()=>{ music.paused ? music.play().catch(()=>{}) : music.pause(); });
+
+// автозапуск: пробуем сразу при заходе; если браузер не разрешил —
+// включаем при первом касании/клике/нажатии клавиши на странице
+let userPaused = false;
+mbtn.addEventListener("click", ()=>{ userPaused = music.paused; });
+function startMusic(){
+  if (!musicOk || userPaused || !music.paused) return;
+  music.play().then(removeKick).catch(()=>{});
+}
+const kicks = ["pointerdown","touchstart","keydown","click"];
+function removeKick(){ kicks.forEach(k => document.removeEventListener(k, startMusic, true)); }
+kicks.forEach(k => document.addEventListener(k, startMusic, true));
+music.play().then(removeKick).catch(()=>{});
+
+// вход по паролю (дата: 7 сентября)
+const gate = document.getElementById("gate"), pw = document.getElementById("pw"), err = document.getElementById("err");
+function ok(v){
+  v = v.trim().toLowerCase();
+  if (/^7\s*сентября/.test(v)) return true;
+  const d = v.replace(/\D/g, "");          // 0709, 07.09, 07.09.2000 ...
+  return d === "0709" || d === "79" || (d.length > 4 && d.startsWith("0709"));
+}
+function unlock(){
+  gate.style.display = "none";
+  document.body.classList.remove("locked");
+  try{ sessionStorage.setItem("unlocked","1"); }catch(e){}
+}
+function tryPw(){
+  if (ok(pw.value)) { unlock(); if (musicOk) music.play().catch(()=>{}); }
+  else { err.textContent = "Не угадала 🙈 попробуй ещё"; pw.value = ""; gate.classList.remove("shake"); void gate.offsetWidth; gate.classList.add("shake"); }
+}
+document.getElementById("enter").addEventListener("click", tryPw);
+pw.addEventListener("keydown", e => { if (e.key === "Enter") tryPw(); });
+try{ if (sessionStorage.getItem("unlocked")) unlock(); }catch(e){}
+
+// убегающая кнопка «Нет»
+const no = document.getElementById("no"), yes = document.getElementById("yes");
+function dodge(){
+  const x = (Math.random()-.5)*Math.min(300, innerWidth-120);
+  const y = (Math.random()-.5)*120;
+  no.style.transform = `translate(${x}px,${y}px)`;
+}
+no.addEventListener("mouseenter", dodge);
+no.addEventListener("touchstart", e=>{e.preventDefault();dodge();});
+no.addEventListener("click", dodge);
+yes.addEventListener("click", ()=>{
+  document.getElementById("yes-msg").style.display = "block";
+  no.style.display = "none";
+  for(let i=0;i<40;i++) setTimeout(spawnHeart, i*60);
+});
+
+// летящие сердечки
+function spawnHeart(){
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = ["💗","💕","💖","🌸","✨"][Math.floor(Math.random()*5)];
+  h.style.left = Math.random()*100 + "vw";
+  h.style.fontSize = (16 + Math.random()*22) + "px";
+  h.style.animationDuration = (6 + Math.random()*6) + "s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(), 12500);
+}
+setInterval(spawnHeart, 700);
+</script>
+</body>
+</html>
