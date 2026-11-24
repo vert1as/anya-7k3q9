@@ -80,7 +80,9 @@
     transition:transform .2s,background .2s}
   #music-btn:hover{transform:scale(1.1)}
   #music-btn.playing{background:var(--deep);animation:pulse 2s infinite}
+  #music-btn:not(.playing){animation:bounce 1.6s infinite}
   #music-btn.off{display:none}
+  @keyframes bounce{50%{transform:translateY(-6px)}}
   body.locked #music-btn{display:none}
   @keyframes pulse{50%{box-shadow:0 0 0 10px #e0457b22}}
 
@@ -155,7 +157,7 @@
 
 <footer>Сделано с любовью ✨</footer>
 
-<audio id="music" src="music/across-the-sea.mp3" loop preload="auto"></audio>
+<audio id="music" src="music/across-the-sea.mp3" loop preload="metadata"></audio>
 <button id="music-btn" title="Музыка">🎵</button>
 
 <script>
@@ -290,7 +292,7 @@ document.getElementById("more").addEventListener("click", nextReason);
 // музыка: Weezer — Across the Sea (файл music/across-the-sea.mp3 кладёшь сам)
 const music = document.getElementById("music"), mbtn = document.getElementById("music-btn");
 let musicOk = true;
-music.addEventListener("error", ()=>{ musicOk = false; mbtn.classList.add("off"); });
+music.addEventListener("error", ()=>{ if (music.error && music.error.code === 4 && !music.currentSrc.includes("across")) { musicOk = false; mbtn.classList.add("off"); } });
 music.addEventListener("play",  ()=> mbtn.classList.add("playing"));
 music.addEventListener("pause", ()=> mbtn.classList.remove("playing"));
 mbtn.addEventListener("click", ()=>{ music.paused ? music.play().catch(()=>{}) : music.pause(); });
@@ -301,9 +303,9 @@ let userPaused = false;
 mbtn.addEventListener("click", ()=>{ userPaused = music.paused; });
 function startMusic(){
   if (!musicOk || userPaused || !music.paused) return;
-  music.play().then(removeKick).catch(()=>{});
+  music.play().then(removeKick).catch(()=>{ if (music.error) music.load(); });
 }
-const kicks = ["pointerdown","touchstart","keydown","click"];
+const kicks = ["pointerdown","pointerup","touchstart","touchend","keydown","click"];
 function removeKick(){ kicks.forEach(k => document.removeEventListener(k, startMusic, true)); }
 kicks.forEach(k => document.addEventListener(k, startMusic, true));
 music.play().then(removeKick).catch(()=>{});
