@@ -71,6 +71,31 @@
   section[hidden]{display:none}
   #teaser b{color:var(--deep);font-size:1.3rem;display:inline-block;margin-top:8px}
 
+  /* день рождения */
+  .cake{width:230px;margin:30px auto 18px}
+  .candles{display:flex;justify-content:center;gap:26px;height:56px;align-items:flex-end}
+  .candle{width:10px;height:34px;background:linear-gradient(#fff,#ffb3cc);border-radius:3px;position:relative}
+  .flame{position:absolute;left:50%;top:-20px;width:12px;height:19px;margin-left:-6px;
+    background:radial-gradient(circle at 50% 70%,#fff6a8,#ffb300 60%,#ff6a00);
+    border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:flick .5s infinite alternate;
+    transition:opacity .4s,transform .4s;box-shadow:0 0 14px #ffb30088}
+  .cake.out .flame{opacity:0;transform:scale(.2);animation:none}
+  @keyframes flick{to{transform:scale(1.15,.9) rotate(4deg)}}
+  .tier{margin:0 auto;border-radius:14px 14px 6px 6px;border-top:8px solid #fff}
+  .t1{width:120px;height:46px;background:#ffc2d6}
+  .t2{width:190px;height:60px;background:#ff8fb1}
+  .plate{width:230px;height:10px;background:#fff;border-radius:10px;margin:0 auto;box-shadow:0 4px 10px #e0457b33}
+  #wish{font-size:1.4rem;color:var(--deep);margin-top:16px;min-height:1.6em}
+  .coupons{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .coupon{border:2px dashed var(--pink);background:#fff;border-radius:18px;padding:22px 14px;cursor:pointer;
+    min-height:130px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
+    font:inherit;color:var(--text);transition:transform .2s;line-height:1.4}
+  .coupon:hover{transform:scale(1.03)}
+  .coupon b{font-size:1.8rem}
+  .coupon.open{background:linear-gradient(135deg,#ffe3ec,#fff);border-style:solid}
+  .confetti{position:fixed;top:-20px;width:10px;height:14px;pointer-events:none;z-index:60;animation:cfall linear forwards}
+  @keyframes cfall{to{transform:translateY(112vh) rotate(720deg)}}
+
   /* причины */
   .reason-card{min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px}
   #reason{font-size:1.35rem;line-height:1.5;transition:opacity .25s,transform .25s}
@@ -158,6 +183,30 @@
   <div class="card" id="mletter-card" hidden style="margin-top:22px"><div id="mletter" class="caret" style="min-height:6em;white-space:pre-wrap;text-align:left;line-height:1.7;font-size:1.1rem"></div></div>
 </section>
 
+<section id="teaser-bd" hidden>
+  <div class="card">🎂 А 6 декабря тебя ждёт ещё один сюрприз<br><b id="teaser-bd-days"></b></div>
+</section>
+
+<section id="bday" hidden>
+  <h2>С днём рождения, Аня! 🎂</h2>
+  <div class="cake" id="cake">
+    <div class="candles">
+      <div class="candle"><i class="flame"></i></div>
+      <div class="candle"><i class="flame"></i></div>
+      <div class="candle"><i class="flame"></i></div>
+    </div>
+    <div class="tier t1"></div>
+    <div class="tier t2"></div>
+    <div class="plate"></div>
+  </div>
+  <button class="btn" id="blow">Задуть свечи 🕯️</button>
+  <p id="wish"></p>
+  <div class="card" id="bletter-card" hidden style="margin-top:28px"><div id="bletter" class="caret" style="min-height:6em;white-space:pre-wrap;text-align:left;line-height:1.7;font-size:1.1rem"></div></div>
+  <h2 style="margin-top:48px">Подарки-купоны 🎁</h2>
+  <p style="margin-bottom:16px;opacity:.8">Нажимай на купоны, чтобы открыть</p>
+  <div class="coupons" id="coupons"></div>
+</section>
+
 <section>
   <h2>Один важный вопрос</h2>
   <p style="margin-bottom:18px">Ты меня любишь?</p>
@@ -216,7 +265,7 @@ new IntersectionObserver((e,o)=>{
 },{threshold:.5}).observe(letterEl);
 
 // ближайшие даты
-const BIRTHDAY = null;   // её день рождения, например [3, 14] = 14 апреля (месяц 0–11: 3 = апрель); null — пока не показывать
+const BIRTHDAY = [11, 6];   // её день рождения, например [3, 14] = 14 апреля (месяц 0–11: 3 = апрель); null — пока не показывать
 function nextDate(month, day){
   const n = new Date(), t = new Date(n.getFullYear(), month, day);
   if (t < new Date(n.getFullYear(), n.getMonth(), n.getDate())) t.setFullYear(n.getFullYear()+1);
@@ -366,6 +415,89 @@ function setupMonth(){
   }
 }
 setupMonth();
+
+// день рождения 6 декабря
+const BD_DATE = new Date("2026-12-06T00:00:00");
+// Письмо ко дню рождения: впиши текст между обратными кавычками. Пока пусто — блок письма не показывается.
+const BD_LETTER = ``;
+const COUPONS = [   // замени на свои
+  "Вечер, который выбираешь ты: фильм, еда, всё остальное — как захочешь",
+  "Прогулка с горячим чаем или кофе",
+  "Обнимашки: 10 минут без ограничений",
+  "Я приготовлю для тебя что-нибудь вкусное",
+  "Плейлист, который я соберу специально для тебя",
+  "Одно твоё желание, которое я постараюсь исполнить",
+];
+function confetti(n){
+  const colors = ["#ff8fb1","#e0457b","#ffd166","#fff","#ffb3cc","#ff9f43"];
+  for (let i=0;i<n;i++){
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (2.5 + Math.random()*2.5) + "s";
+    c.style.animationDelay = (Math.random()*0.6) + "s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 6500);
+  }
+}
+function setupBirthday(){
+  const preview = location.search.includes("preview=birthday");   // для проверки: ?preview=birthday
+  const now = new Date(), open = preview || now >= BD_DATE;
+  const bday = document.getElementById("bday"), tz = document.getElementById("teaser-bd");
+  if (!open){
+    if (now >= MONTH_DATE){          // подсказку про 6 декабря показываем только после 4 декабря
+      const d = Math.ceil((BD_DATE - now) / 86400000);
+      document.getElementById("teaser-bd-days").textContent =
+        `откроется 6 декабря — через ${d} ${d%10===1&&d%100!==11?"день":(d%10>=2&&d%10<=4&&(d%100<10||d%100>20))?"дня":"дней"}`;
+      tz.hidden = false;
+    }
+    return;
+  }
+  bday.hidden = false;
+  // торт
+  const cake = document.getElementById("cake"), blow = document.getElementById("blow"), wish = document.getElementById("wish");
+  function toggle(){
+    if (!cake.classList.contains("out")){
+      cake.classList.add("out");
+      wish.textContent = "Загадай желание ✨";
+      blow.textContent = "Зажечь снова 🔥";
+      confetti(90);
+    } else {
+      cake.classList.remove("out");
+      wish.textContent = "";
+      blow.textContent = "Задуть свечи 🕯️";
+    }
+  }
+  blow.addEventListener("click", toggle);
+  cake.addEventListener("click", toggle);
+  cake.style.cursor = "pointer";
+  // письмо
+  if (BD_LETTER.trim()){
+    const card = document.getElementById("bletter-card"), el = document.getElementById("bletter");
+    card.hidden = false;
+    let started = false;
+    new IntersectionObserver((e,o)=>{
+      if (!e[0].isIntersecting || started) return;
+      started = true; o.disconnect();
+      let i = 0, timer;
+      (function type(){ el.textContent = BD_LETTER.slice(0, ++i); if (i < BD_LETTER.length) timer = setTimeout(type, 45); })();
+      el.style.cursor = "pointer";
+      el.title = "Нажми, чтобы показать всё письмо сразу";
+      el.addEventListener("click", ()=>{ clearTimeout(timer); el.textContent = BD_LETTER; el.classList.remove("caret"); });
+    },{threshold:.5}).observe(el);
+  }
+  // купоны
+  const box = document.getElementById("coupons");
+  box.innerHTML = COUPONS.map((t,i)=>`<button class="coupon" data-t="${t.replace(/"/g,"&quot;")}"><b>🎁</b><span>Купон №${i+1}</span></button>`).join("");
+  box.querySelectorAll(".coupon").forEach(b=>b.addEventListener("click", ()=>{
+    if (b.classList.contains("open")) return;
+    b.classList.add("open");
+    b.innerHTML = `<b>💗</b><span>${b.dataset.t}</span>`;
+    confetti(25);
+  }));
+}
+setupBirthday();
 
 // музыка: Weezer — Across the Sea (файл music/across-the-sea.mp3 кладёшь сам)
 const music = document.getElementById("music"), mbtn = document.getElementById("music-btn");
