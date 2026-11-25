@@ -86,13 +86,6 @@
   .t2{width:190px;height:60px;background:#ff8fb1}
   .plate{width:230px;height:10px;background:#fff;border-radius:10px;margin:0 auto;box-shadow:0 4px 10px #e0457b33}
   #wish{font-size:1.4rem;color:var(--deep);margin-top:16px;min-height:1.6em}
-  .coupons{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-  .coupon{border:2px dashed var(--pink);background:#fff;border-radius:18px;padding:22px 14px;cursor:pointer;
-    min-height:130px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
-    font:inherit;color:var(--text);transition:transform .2s;line-height:1.4}
-  .coupon:hover{transform:scale(1.03)}
-  .coupon b{font-size:1.8rem}
-  .coupon.open{background:linear-gradient(135deg,#ffe3ec,#fff);border-style:solid}
   .confetti{position:fixed;top:-20px;width:10px;height:14px;pointer-events:none;z-index:60;animation:cfall linear forwards}
   @keyframes cfall{to{transform:translateY(112vh) rotate(720deg)}}
 
@@ -202,9 +195,6 @@
   <button class="btn" id="blow">Задуть свечи 🕯️</button>
   <p id="wish"></p>
   <div class="card" id="bletter-card" hidden style="margin-top:28px"><div id="bletter" class="caret" style="min-height:6em;white-space:pre-wrap;text-align:left;line-height:1.7;font-size:1.1rem"></div></div>
-  <h2 style="margin-top:48px">Подарки-купоны 🎁</h2>
-  <p style="margin-bottom:16px;opacity:.8">Нажимай на купоны, чтобы открыть</p>
-  <div class="coupons" id="coupons"></div>
 </section>
 
 <section>
@@ -419,15 +409,9 @@ setupMonth();
 // день рождения 6 декабря
 const BD_DATE = new Date("2026-12-06T00:00:00");
 // Письмо ко дню рождения: впиши текст между обратными кавычками. Пока пусто — блок письма не показывается.
-const BD_LETTER = ``;
-const COUPONS = [   // замени на свои
-  "Вечер, который выбираешь ты: фильм, еда, всё остальное — как захочешь",
-  "Прогулка с горячим чаем или кофе",
-  "Обнимашки: 10 минут без ограничений",
-  "Я приготовлю для тебя что-нибудь вкусное",
-  "Плейлист, который я соберу специально для тебя",
-  "Одно твоё желание, которое я постараюсь исполнить",
-];
+const BD_LETTER = `Аня, привет!
+
+Поздравляю тебя с днём рождения! Вот ты теперь и бабушка) Люблю`;
 function confetti(n){
   const colors = ["#ff8fb1","#e0457b","#ffd166","#fff","#ffb3cc","#ff9f43"];
   for (let i=0;i<n;i++){
@@ -487,15 +471,6 @@ function setupBirthday(){
       el.addEventListener("click", ()=>{ clearTimeout(timer); el.textContent = BD_LETTER; el.classList.remove("caret"); });
     },{threshold:.5}).observe(el);
   }
-  // купоны
-  const box = document.getElementById("coupons");
-  box.innerHTML = COUPONS.map((t,i)=>`<button class="coupon" data-t="${t.replace(/"/g,"&quot;")}"><b>🎁</b><span>Купон №${i+1}</span></button>`).join("");
-  box.querySelectorAll(".coupon").forEach(b=>b.addEventListener("click", ()=>{
-    if (b.classList.contains("open")) return;
-    b.classList.add("open");
-    b.innerHTML = `<b>💗</b><span>${b.dataset.t}</span>`;
-    confetti(25);
-  }));
 }
 setupBirthday();
 
